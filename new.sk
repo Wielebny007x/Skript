@@ -72,18 +72,19 @@ command /mc-aura [<text>]:
 			send "{@perm}"
 
 command /mc-update:
-	send "{@tag} Trwa pobieranie aktualizacji..."
-	download from "https://github.com/Wielebny007x/Skript/blob/master/new.sk" to "plugins/Skript/scripts/mooncheat.sk"
-	wait 1 second
-	send "{@tag} Pobrano."
-	wait 10 ticks
-	send "{@tag} Instalowanie..."
-	wait 15 ticks
-	send "{@tag} Zainstalowano."
-	set {_v} to {@v}
-	send "{@tag} Przeladowywanie.."
-	execute console command "skript reload mooncheat"
-	stop
+	trigger:
+		send "{@tag} Trwa pobieranie aktualizacji..."
+		download from "https://github.com/Wielebny007x/Skript/blob/master/new.sk" to "plugins/Skript/scripts/mooncheat.sk"
+		wait 1 second
+		send "{@tag} Pobrano."
+		wait 10 ticks
+		send "{@tag} Instalowanie..."
+		wait 15 ticks
+		send "{@tag} Zainstalowano."
+		set {_v} to {@v}
+		send "{@tag} Przeladowywanie.."
+		execute console command "skript reload mooncheat"
+		stop
 
 # ANTY SNEAK. Np. kucanie i kraftowanie, kucanie i pisanie. ###############
 on craft:
