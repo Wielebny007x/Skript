@@ -54,23 +54,23 @@ variables:
 		# FUNKCJA NIE TESTWOWANA. RADZE NIE URUCHAMIAC. JESZCZE NIEDOSTEPNA.
 		{Pentakill.Autoban} = false
 
-		
+########################AUTO UPDATE################################
 on load:
 	set {_version} to content of file "plugins/Skript/scripts/mooncheat.sk"
 	set {_v} to index of "##" in {_version}
 	set {_v2} to subtext of {_version} from character ({_v}+1) to character (length of {_version})
 	set {_v3} to index of "##" in {_v2}
 	set {version} to subtext of {_version} from character ({_v}+1) to character ({_v3})
-	set {_version} to result of connect to "https://pastebin.com/raw/67kduwb8"
+	set {_version} to result of connect to "https://raw.githubusercontent.com/Wielebny007x/Skript/master/new.sk"
 	set {_v} to index of "##" in {_version}
 	set {_v2} to subtext of {_version} from character ({_v}+1) to character (length of {_version})	
 	set {_v3} to index of "##" in {_v2}
 	set {version.new} to subtext of {_version} from character ({_v}+1) to character ({_v3})
 	{version} is not {version.new}:
-		send "{@tag} Jest dostepna nowa wersja skryptu! Pobierz ja /update pobierz" to console
-command /update [<text>]:
+		send "{@tag} Jest dostepna nowa wersja skryptu! Pobierz ja /pk-update pobierz" to console
+command /pk-update [<text>]:
 	trigger:
-		set {_version} to result of connect to "https://pastebin.com/raw/67kduwb8"
+		set {_version} to result of connect to "https://raw.githubusercontent.com/Wielebny007x/Skript/master/new.sk"
 		set {_v} to index of "##" in {_version}	
 		set {_v2} to subtext of {_version} from character ({_v}+1) to character (length of {_version})
 		set {_v3} to index of "##" in {_v2}	
@@ -82,15 +82,15 @@ command /update [<text>]:
 				send "{@tag} Jest dostepna nowa wersja"
 		arg 1 is "pobierz":
 			{version} is not {version.new}:
-				download "https://pastebin.com/raw/67kduwb8" to "plugins/Skript/scripts/mooncheat.sk"
+				download "hhttps://raw.githubusercontent.com/Wielebny007x/Skript/master/new.sk" to "plugins/Skript/scripts/mooncheat.sk"
 				send "{@tag} Pobrano najnowsza wersje!"
 			else:
 				send "{@tag} Masz juz najnowsza wersje skrypta!"
 		else:
-			send "{@tag} /update sprawdz - sprawdza aktualizacje"
-			send "{@tag} /update pobierz - pobiera aktualizacje"
+			send "{@tag} /pk-update sprawdz - sprawdza aktualizacje"
+			send "{@tag} /pk-update pobierz - pobiera aktualizacje"
 		stop
-	
+########################################################################################
 on connect:
 	if {Pentakill.AntiBot.%player%} = true:
 		kick player due to "&7[&bP&eAC&7] &rWejdz na serwer za 15 sekund."
