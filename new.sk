@@ -1,5 +1,6 @@
 #Ver 5#
 #
+#Nie usuwaj tej wersji na gorze, bo jak usuniesz, nie beda dzialaly aktualizacje.
 #
 # [PAC]
 # Pentakill Anti-Cheat
@@ -24,7 +25,7 @@ options:
 		
 		flyczas: 1 second
 		
-		antybot: 14 seconds
+		antybot: 7 seconds
 		
 		PAC: &bPentakill &eAnti-Cheat
 		version: 4
@@ -42,20 +43,24 @@ variables:
 		{Pentakill.AutoDisconnect} = true
 		{Pentakill.Reach} = true
 		{Pentakill.FastBow} = true
+		{Pentakill.FastBreak} = true
 		
-		{Pentakill.Dzwiek} = true
+		{Pentakill.Dzwiek} = false
 		
-		{Pentakill.AntiBot.%player%} = true
+		{Pentakill.AntyBot.%player%} = 3
+		{Pentakill.AntiBot} = false
+		
+		{Pentakill.AutoKick} = false
 		
 		#FUNKCJE JESZCZE NIEDOSTEPNE. PLANOWANE DO ZROBIENIA.
 		{Pentakill.FastLadder} = false
-		{Pentakill.Speedmine} = false
-		
-		# FUNKCJA NIE TESTWOWANA. RADZE NIE URUCHAMIAC. JESZCZE NIEDOSTEPNA.
-		{Pentakill.Autoban} = false
+		{Pentakill.Macro} = false
 
-########################AUTO UPDATE################################
+#Update przy komendzie
 on load:
+	set {dirtbreak} to 6 #LOPATA
+	set {stonebreak} to 4 #KILOF
+
 	set {_version} to content of file "plugins/Skript/scripts/mooncheat.sk"
 	set {_v} to index of "##" in {_version}
 	set {_v2} to subtext of {_version} from character ({_v}+1) to character (length of {_version})
@@ -90,278 +95,99 @@ command /pk-update [<text>]:
 			send "{@tag} /pk-update sprawdz - sprawdza aktualizacje"
 			send "{@tag} /pk-update pobierz - pobiera aktualizacje"
 		stop
-########################################################################################
+#Update przy komendzie
 on connect:
-	if {Pentakill.AntiBot.%player%} = true:
-		kick player due to "&7[&bP&eAC&7] &rWejdz na serwer za 15 sekund."
-		wait {@antybot}
-		set {Pentakill.AntiBot.%player%} to false
-		
+	if {Pentakill.Antibot} is true:
+		if {Pentakill.AntyBot.%player%} = 3:
+			kick player due to "&7[&bP&eAC&7] &rWejdz na serwer jeszcze 3 razy. Za 7 sekund"
+			wait {@antybot}
+			set {Pentakill.AntyBot.%player%} to 2
+		else if {Pentakill.AntyBot.%player%} = 2:
+			kick player due to "&7[&bP&eAC&7] &rWejdz na serwer jeszcze 2 razy. Za 7 sekund"
+			wait {@antybot}
+			set {Pentakill.AntyBot.%player%} to 1
+		else if {Pentakill.AntyBot.%player%} = 1:
+			kick player due to "&7[&bP&eAC&7] &rWejdz na serwer ostatni raz. Za 7 sekund"
+			wait {@antybot}
+			set {Pentakill.AntyBot.%player%} to 0
 		
 command /pentakill:
 	trigger:
-		if player has permission "mooncheat.status":
+		if player has permission "pentakill.status":
 			send ""
 			send "{@tag}"
-			send "{@1} &e/pk &7- Pokazuje pomoc"
-			send "{@1} &e/pk on/off &7- Wlacza anty cheata"
-			send "{@1} &e/pk-sneak on/off &7- Wlacza/Wylacza anty sneaka"
-			send "{@1} &e/pk-aura on/off &7- Wlacza/Wylacza anty aure"
-			send "{@1} &e/pk-knock on/off &7- Wlacza/Wylacza anty knockbacka"
-			send "{@1} &e/pk-fly on/off &7- Wlacza/Wylacza anty fly"
-			send "{@1} &e/pk-fp on/off &7- Wlacza/Wylacza anty fast place"
-			send "{@1} &e/pk-fe on/off &7- Wlacza/Wylacza anty fast eat"
-			send "{@1} &e/pk-fr on/off &7- Wlacza/Wylacza anty fast regen"
-			send "{@1} &e/pk-r on/off &7- Wlacza/Wylacza anty Reach"
-			send "{@1} &e/pk-ad on/off &7- Wlacza/Wylacza auto-discsonnect"
+			send "{@1} &e/pentakill &7- Pokazuje pomoc"
+			send "{@1} &e/pk &7- Wlacza anty cheata"
+			send "{@1} &e/pk-aura &7- Wlacza/Wylacza anty aure"
+			send "{@1} &e/pk-abot &7- Wlacza/Wylacza Anty bota"
+			send "{@1} &e/pk-akick &7- Wlacza/Wylacza auto kicka dla niektorych funcki"
 			send "&7-------------------------------------"
-			send "{@1} &e/pk-info &7- Informacje skryptu"
+			send "{@1} &e/pk-update &7- Sprawdzenie/Pobranie aktualizacji"
+			send "{@1} &e/pk-dzwiek &7- [Narazie nieaktywne]"
+			send "{@1} &e/pk-list &7- Pokazuje liste anty cheatow"
 			send "{@tag}"
 			send ""
 		else:
 			send "{@perm}"
             
-command /pk [<text>]:
+command /pk:
 	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.Status} is true:
-					set {Pentakill.Status} to false
-					send "{@tag} Wylaczyles anty cheata."
-				else:
-					if {Pentakill.Status} is false:
-						send "{@tag} Anty cheat jest juz &cwylaczony!"
-			if arg 1 is "on":
-				if {Pentakill.Status} is false:
-					set {Pentakill.Status} to true
-					send "{@tag} Wlaczyles anty cheata."
-				else:
-					if {Pentakill.Status} is true:
-						send "{@tag} Anty cheat jest juz &awlaczony!"
+		if player has permission "pentakill.status":
+			if {Pentakill.Status} is true:
+				set {Pentakill.Status} to false
+				send "{@tag} Wylaczyles anty cheata."
+			else if {Pentakill.Status} is false:
+				set {Pentakill.Status} to true
+				send "{@tag} Wlaczyles anty cheata."
 		else:
 			send "{@perm}"
 			
-command /pk-sneak [<text>]:
+command /pk-list:
 	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "on":
-				if {Pentakill.Sneak} is false:
-					set {Pentakill.Sneak} to true
-					send "{@tag} Wlaczyles anty sneaka"
-				else:
-					if {Pentakill.Sneak} is true:
-						send "{@tag} Anty sneak jest juz &awlaczony!"
-			if arg 1 is "off":
-				if {Pentakill.Sneak} is true:
-					set {Pentakill.Sneak} to false
-					send "{@tag} Wylaczyles anty sneaka"
-				else:
-					if {Pentakill.Sneak} is false:
-						send "{@tag} Anty sneak jest juz &cwylaczony!"
-				
+		if player has permission "pentakill.list":
+			show "s;1;i;diamond sword;n;&4&lPentakill;l;&dAnty Killaura;c;;s;2;i;crafting table;n;&4&lPentakill;l;&dAnty Sneak;c;;s;3;i;bow;n;&4&lPentakill;l;&dAnty Knockback;c;;s;4;i;feather;n;&4&lPentakill;l;&dAnty Fly;c;;s;5;i;obsidian;n;&4&lPentakill;l;&dAnty FastPlace;c;;s;6;i;steak;n;&4&lPentakill;l;&dAnty FastEat;c;;s;7;i;golden apple;n;&4&lPentakill;l;&dAnty FastRegen;c;;s;8;i;redstone torch;n;&4&lPentakill;l;&dAnty Auto-Disconnect;c;;s;9;i;iron sword;n;&4&lPentakill;l;&dAnty Reach;c;;s;10;i;arrow;n;&4&lPentakill;l;&dAnty FastBow;c;;s;11;i;stone pickaxe;n;&4&lPentakill;l;&dAnty FastBreak;c;;s;18;i;diamond;n;&4&lPentakill;l;&bWielebny;c;;" with 2 rows named "&4Pentakill &7- &6AntyCheat" to player
 			
-command /pk-aura [<text>]:
+command /pk-abot:
 	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "on":
-				if {Pentakill.Aura} is false:
-					set {Pentakill.Aura} to true
-					send "{@tag} Wlaczyles anty aure"
-				else:
-					if {Pentakill.Aura} is true:
-						send "{@tag} Anty aura jest juz &awlaczona"
-			if arg 1 is "off":
-				if {Pentakill.Aura} is true:
-					set {Pentakill.Aura} to false
-					send "{@tag} Wylaczyles anty aure"
-				else:
-					if {Pentakill.Aura} is false:
-						send "{@tag} Anty aura jest juz &cwylaczona"
+		if player has permission "pentakill.bot":
+			if {Pentakill.AntiBot} is false:
+				set {Pentakill.AntiBot} to true
+				send "{@tag} Wlaczyles anty bota"
+			else if {Pentakill.AntiBot} is true:
+				set {Pentakill.AntiBot} to false
+				send "{@tag} Wylaczyles anty bota"
+						
+command /pk-akick:
+	trigger:
+		if player has permission "pentakill.kick":
+			if {Pentakill.AutoKick} is false:
+				set {Pentakill.AutoKick} to true
+				send "{@tag} Wlaczyles auto kick"
+			else if {Pentakill.AutoKick} is true:
+				set {Pentakill.AutoKick} to false
+				send "{@tag} Wylaczyles auto kicka"
+			
+command /pk-aura:
+	trigger:
+		if player has permission "pentakill.status":
+			if {Pentakill.Aura} is false:
+				set {Pentakill.Aura} to true
+				send "{@tag} Wlaczyles anty aure"
+			else if {Pentakill.Aura} is true:
+				set {Pentakill.Aura} to false
+				send "{@tag} Wylaczyles anty aure"
 		else:
 			send "{@perm}"
 			
-command /pk-fly [<text>]:
+command /pk-dzwiek:
 	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.Fly} is true:
-					set {Pentakill.Fly} to false
-					send "{@tag} Wylaczyles anty fly"
-				else:
-					if {Pentakill.Fly} is false:
-						send "{@tag} Anty fly jest juz &cwylaczony"
-			if arg 1 is "on":
-				if {Pentakill.Fly} is false:
-					set {Pentakill.Fly} to true
-					send "{@tag} Wlaczyles anty fly"
-				else:
-					if {Pentakill.Fly} is true:
-						send "{@tag} Anty fly jest juz &awlaczony"
-		else:
-			send "{@perm}"
-			
-command /pk-fp [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.FastPlace} is true:
-					set {Pentakill.FastPlace} to false
-					send "{@tag} Wylaczyles anty fast place"
-				else:
-					if {Pentakill.FastPlace} is false:
-						send "{@tag} Anty Fast place jest juz &cwylaczony"
-			if arg 1 is "on":
-				if {Pentakill.FastPlace} is false:
-					set {Pentakill.FastPlace} to true
-					send "{@tag} Wlaczyles anty fast place"
-				else:
-					if {Pentakill.FastPlace} is true:
-						send "{@tag} Anty fast place jest juz &awlaczony"
-		else:
-			send "{@perm}"
-			
-command /pk-fe [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.FastEat} is true:
-					set {Pentakill.FastEat} to false
-					send "{@tag} Wylaczyles anty fast eat"
-				else:
-					if {Pentakill.FastEat} is false:
-						send "{@tag} Anty fast eat jest juz &cwylaczony!"
-			if arg 1 is "on":
-				if {Pentakill.FastEat} is false:
-					set {Pentakill.FastEat} to true
-					send "{@tag} Wlaczyles anty fast eat"
-				else:
-					if {Pentakill.FastEat} is true:
-						send "{@tag} Anty fast eat jest juz &awlaczony!"
-		else:
-			send "{@perm}"
-			
-command /pk-fr [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.FastRegen} is true:
-					set {Pentakill.FastRegen} to false
-					send "{@tag} Wylaczyles anty fast regen"
-				else:
-					if {Pentakill.FastRegen} is false:
-						send "{@tag} Anty fast regen jest juz &cwylaczony!"
-			if arg 1 is "on":
-				if {Pentakill.FastRegen} is false:
-					set {Pentakill.FastRegen} to true
-					send "{@tag} Wlaczyles anty fast regen"
-				else:
-					if {Pentakill.FastRegen} is true:
-						send "{@tag} Anty fast regen jest juz &awlaczony!"
-		else:
-			send "{@perm}"
-			
-			
-command /pk-knock [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.Knockback} is true:
-					set {Pentakill.Knockback} to false
-					send "{@tag} Wylaczyles anty knockback"
-				else:
-					if {Pentakill.Knockback} is false:
-						send "{@tag} Anty knockback jest juz &cwylaczony!"
-			if arg 1 is "on":
-				if {Pentakill.Knockback} is false:
-					set {Pentakill.Knockback} to true
-					send "{@tag} Wlaczyles anty knockback"
-				else:
-					if {Pentakill.Knockback} is true:
-						send "{@tag} Anty knockback jest juz &awlaczony!"
-		else:
-			send "{@perm}"
-			
-command /pk-r [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.Reach} is true:
-					set {Pentakill.Reach} to false
-					send "{@tag} Wylaczyles anty reach"
-				else:
-					if {Pentakill.Reach} is false:
-						send "{@tag} Anty reach jest juz &cwylaczony!"
-			if arg 1 is "on":
-				if {Pentakill.Reach} is false:
-					set {Pentakill.Reach} to true
-					send "{@tag} Wlaczyles anty reach"
-				else:
-					if {Pentakill.Reach} is true:
-						send "{@tag} Anty reach jest juz &awlaczony!"
-		else:
-			send "{@perm}"
-			
-command /pk-ad [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.AutoDisconnect} is true:
-					set {Pentakill.AutoDisconnect} to false
-					send "{@tag} Wylaczyles anty auto-discsonnect"
-				else:
-					if {Pentakill.AutoDisconnect} is false:
-						send "{@tag} Anty auto-discsonnect jest juz &cwylaczony!"
-			if arg 1 is "on":
-				if {Pentakill.AutoDisconnect} is false:
-					set {Pentakill.AutoDisconnect} to true
-					send "{@tag} Wlaczyles anty auto-discsonnect"
-				else:
-					if {Pentakill.AutoDisconnect} is true:
-						send "{@tag} Anty auto-discsonnect jest juz &awlaczony!"
-		else:
-			send "{@perm}"
-			
-command /pk-dzwiek [<text>]:
-	trigger:
-		if player has permission "mooncheat.status":
-			if arg 1 is "off":
-				if {Pentakill.Dzwiek} is true:
-					set {Pentakill.Dzwiek} to false
-					send "{@tag} Wylaczyles dzwieki"
-				else:
-					if {Pentakill.Dzwiek} is false:
-						send "{@tag} Dzwieki sa juz &cwylaczone!"
-			if arg 1 is "on":
-				if {Pentakill.Dzwiek} is false:
-					set {Pentakill.Dzwiek} to true
-					send "{@tag} Wlaczyles dzwieki"
-				else:
-					if {Pentakill.Dzwiek} is true:
-						send "{@tag} Dzwieki sa juz &awlaczone!"
-		else:
-			send "{@perm}"
-			
-command /pk-info:
-	trigger:
-		if player has permission "mooncheat.status":
-			send ""
-			send ""
-			send "{@tag} Zmieniono zombie na villagera"
-			send "{@tag} Dodano kolorystyke dla &awlaczenia&7/&cwylaczenia"
-			send "{@tag} Dodano niewidzialnosc dla anty kill aury"
-			send "{@tag} Dodano anty-fly"
-			send "{@tag} Dodano Anty knockback"
-			send "{@tag} Dodano Anty fastplace"
-			send "{@tag} Dodano Anty FastEat"
-			send "{@tag} Dodano Anty FastRegen"
-			send "{@tag} Dodano Anty Reach"
-			send "{@tag} Dodano Anty FastBow"
-			send "{@tag} Dodano Anty Auto-Disconnect"
-			send "{@tag} Dodano variablesy do anty cheatow"
-			send "{@tag} Dodano dzwiek, gdy ktos czituje, oraz opcje wlacz/wylacz."
-			send "{@tag} TODO: &canty speedmine&7, &canty fastladder&7."
-			send ""
-			send ""
+		if player has permission "pentakill.status":
+			if {Pentakill.Dzwiek} is true:
+				set {Pentakill.Dzwiek} to false
+				send "{@tag} Wylaczyles dzwieki"
+			else if {Pentakill.Dzwiek} is false:
+				set {Pentakill.Dzwiek} to true
+				send "{@tag} Wlaczyles dzwieki"
 		else:
 			send "{@perm}"
 
@@ -371,20 +197,20 @@ on craft:
 		if {Pentakill.Sneak} is true:
 			if player is sneaking:
 				loop all players:
-					if loop-player has permission "mooncheat.odbierz":
+					if loop-player has permission "pentakill.odbierz":
 						send "{@tag} Gracz &6%player% &7kuca i kraftuje! ( &bSneak &7)" to loop-player
 						if {Pentakill.Dzwiek} is true:
-							execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
                     
 on chat:
 	if {Pentakill.Status} is true:
 		if {Pentakill.Sneak} is true:
 			if player is sneaking:
 				loop all players:
-					if loop-player has permission "mooncheat.odbierz":
+					if loop-player has permission "pentakill.odbierz":
 						send "{@tag} Gracz &6%player% &7Kuca i pisze! ( &bSneak &7)" to loop-player
 						if {Pentakill.Dzwiek} is true:
-							execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
                     
 #Anty fast eat
 on eat:
@@ -394,10 +220,10 @@ on eat:
 			{MoonCheat.fe.%player%} is bigger than 3:
 				delete {MoonCheat.fe.%player%}
 				loop all players:
-					if loop-player has permission "mooncheat.odbierz":
+					if loop-player has permission "pentakill.odbierz":
 						send "{@tag} Gracz &6%player% &7Za szybko je! ( &bFastEat&7 )" to loop-player
 						if {Pentakill.Dzwiek} is true:
-							execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 						stop
 			wait 1 second
 			delete {MoonCheat.fe.%player%}
@@ -420,10 +246,10 @@ on damage of player:
 				set {_loc1::%victim%} to location of victim
 				if {_loc::%victim%} is {_loc1::%victim%}:
 					loop all players:
-						if loop-player has permission "mooncheat.odbierz":
+						if loop-player has permission "pentakill.odbierz":
 							send "{@tag} Gracz &6%victim% &7nie odlatuje od uderzen! (&b Anty Knockback&7 )" to loop-player
 							if {Pentakill.Dzwiek} is true:
-								execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+								execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 
 #Anty fast place
 on place:
@@ -433,10 +259,12 @@ on place:
 				delete {MoonCheat.fp.%player%}
 				cancel event
 				loop all players:
-					if loop-player has permission "mooncheat.odbierz":
+					if loop-player has permission "pentakill.odbierz":
 						send "{@tag} Gracz &6%player% &7szybko stawia bloki! ( &bFastPlace&7 )" to loop-player
 						if {Pentakill.Dzwiek} is true:
-							execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+						if {Pentakill.AutoKick} is true:
+							kick player due to "{@tag} Za szybko stawiasz te bloki.. ( &bFastPlace&7 )"
 						stop
 		add 1 to {MoonCheat.fp.%player%}
 		wait 5 tick
@@ -456,10 +284,10 @@ on heal:
 					cancel event
 					set {regen.%player%} to now
 					loop all players:
-						if loop-player has permission "mooncheat.odbierz":
+						if loop-player has permission "pentakill.odbierz":
 							send "{@tag} Gracz &6%player% &7Za szybko regeneruje zycie! (&b FastRegen &7)" to loop-player
 							if {Pentakill.Dzwiek} is true:
-								execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+								execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 							stop
 						set {regen.%player%} to now
 						delete {health.%player%}
@@ -474,10 +302,10 @@ on damage of player:
 					attacker's gamemode is not creative:
 						distance between attacker and victim is greater than 5:
 							loop all players:
-								if loop-player has permission "mooncheat.odbierz":
+								if loop-player has permission "pentakill.odbierz":
 									send "{@tag} Gracz &6%victim% &7Bije z 5 kratek! (&b Reach&7 )" to loop-player
 									if {Pentakill.Dzwiek} is true:
-										execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+										execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 										
 #Anty Auto-Disconnect
 on damage of player:
@@ -495,10 +323,10 @@ on disconnect:
 		if {Pentakill.AutoDisconnect} is true:
 			{pk.walka.%player%} is set:
 				loop all players:
-					if loop-player has permission "mooncheat.odbierz":
+					if loop-player has permission "pentakill.odbierz":
 						send "{@tag} Gracz &6%player% &7automatycznie wyszedl z serwera! (&b Auto-Disconnect&7 )" to loop-player
 						if {Pentakill.Dzwiek} is true:
-							execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 #Anty fast bow
 on projectile hit:
 	if {Pentakill.Status} is true:
@@ -506,11 +334,25 @@ on projectile hit:
 			shooter is player
 			{pk.fb.%shooter%} is set:
 				loop all players:
-					if loop-player has permission "mooncheat.odbierz":
+					if loop-player has permission "pentakill.odbierz":
 						send "{@tag} Gracz &6%shooter% &7szybko strzela z luku! (&b FastBow&7 )" to loop-player
 						if {Pentakill.Dzwiek} is true:
-							execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 							
+#ANTY MAKRO
+on click:
+	if {Pentakill.Status} is true:
+		if {Pentakill.Makro} is true:
+			add 1 to {pk.makro.%player%}
+			wait 1.1 second
+			remove 1 from {pk.makro.%player%}
+			if {pk.makro.%player%} is greater than 20:
+				loop all players:
+					if loop-player has permission "pentakill.odbierz":
+						send "{@tag} Gracz &6%player% &7bardzo szybko klika! ( &bMakro&7 )" to loop-player
+						if {Pentakill.Dzwiek} is true:
+							execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+
 #ANTY AURA ###########################################################################
 
 every {@auraczas}:
@@ -535,10 +377,10 @@ on damage:
 		add 1 to {pk.aura.%attacker%}
 		if {pk.aura.%attacker%} is {@aurahity}:
 			loop all players:
-				if loop-player has permission "mooncheat.odbierz":
+				if loop-player has permission "pentakill.odbierz":
 					send "{@tag} Gracz &6%attacker% &7posiada killaure! ( &bKillAura&7 )" to loop-player
 					if {Pentakill.Dzwiek} is true:
-						execute console command "playsound tile.piston.in %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
+						execute console command "playsound tile.piston.in %loop-player% %loop-player% %x-coord of loop-player% %y-coord of loop-player% %z-coord of loop-player%"
 				   
 on death of villager:
 	if victim's name contains "&3Moon&cCheat":
@@ -547,3 +389,30 @@ on death of villager:
 on disconnect:
 	delete {MoonCheat.fp.%player%}
 	delete {MoonCheat.fe.%player%}
+# FAST BREAK
+on mine of dirt, gravel, sand or netherrack:
+	if {Pentakill.FastBreak} is true:
+		player has any shovel in hand:
+			tool is not enchanted
+			add 1 to {%player%.dirtbreak}
+			wait 20 ticks
+			{%player%.dirtbreak} is bigger than {dirtbreak}:
+				clear {%player%.dirtbreak}
+				if {Pentakill.AutoKick} is true:
+					kick player due to "{@tag} Szybko kopiesz ta lopata.. ( &bFastBreak &7)"
+			else:
+				clear {%player%.dirtbreak}
+#Anty chodzenie po wodzie
+on walk on water:
+	if {Pentakill.Status} is true:
+		block at player is air
+		block under player is water
+		wait 5 ticks
+		block under player is water
+		wait 1 tick
+		block at player is air
+		block under player is water
+		teleport player to block under player
+		loop all players:
+			if loop-player has permission "pentakill.odbierz":
+				send "{@tag} Gracz &6%player% &7chodzi po wodzie!"
