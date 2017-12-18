@@ -1,4 +1,4 @@
-#Ver 5#
+#Ver 6#
 #
 #Nie usuwaj tej wersji na gorze, bo jak usuniesz, nie beda dzialaly aktualizacje.
 #
@@ -40,7 +40,7 @@ variables:
 		{Pentakill.FastPlace} = true
 		{Pentakill.FastEat} = true
 		{Pentakill.FastRegen} = true
-		{Pentakill.AutoDisconnect} = true
+		{Pentakill.AutoDisconnect} = false
 		{Pentakill.Reach} = true
 		{Pentakill.FastBow} = true
 		{Pentakill.FastBreak} = true
