@@ -1,4 +1,4 @@
-#Ver 6#
+#Wersja 6.1#
 #
 #Nie usuwaj tej wersji na gorze, bo jak usuniesz, nie beda dzialaly aktualizacje.
 #
@@ -87,7 +87,7 @@ command /pk-update [<text>]:
 				send "{@tag} Jest dostepna nowa wersja"
 		arg 1 is "pobierz":
 			{version} is not {version.new}:
-				download "hhttps://raw.githubusercontent.com/Wielebny007x/Skript/master/new.sk" to "plugins/Skript/scripts/mooncheat.sk"
+				download "https://raw.githubusercontent.com/Wielebny007x/Skript/master/new.sk" to "plugins/Skript/scripts/mooncheat.sk"
 				send "{@tag} Pobrano najnowsza wersje!"
 			else:
 				send "{@tag} Masz juz najnowsza wersje skrypta!"
